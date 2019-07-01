@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and().csrf().disable()
                 .formLogin()
-                .loginPage("/login") //tutaj mówimy na jakiego urla aplikacja ma nas przekierować kiedy nie jestesmy zalogowani
+                .loginPage("/") //tutaj mówimy na jakiego urla aplikacja ma nas przekierować kiedy nie jestesmy zalogowani
                 .usernameParameter("loginEmail") //nazwa inputa z loginemw htmlu(formularzu) logowania
                 .passwordParameter("loginPassword")//nazwa inputa z hasłem htmlu(formularzu) logowania
                 .loginProcessingUrl("/processLogin") //na jaki adres ma zostać wysłany formularz logowania

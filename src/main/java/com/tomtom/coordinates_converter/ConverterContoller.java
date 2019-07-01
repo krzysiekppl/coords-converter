@@ -17,13 +17,16 @@ public class ConverterContoller {
     private String showInputPages() {
         return "index";
     }
+    @GetMapping(value = "/convert_coordinates")
+    private String showInputPages2() {
+        return "index";
+    }
 
     @PostMapping(value = "/convert_coordinates")
     private String convertCoordinates(Model model,
                                       @ModelAttribute(name = "coordinates") String coord,
                                       @ModelAttribute(name = "order") String order) {
         converter.checkInputCoordinates(coord, order);
-
         model.addAttribute("original", converter);
         return "index";
     }
