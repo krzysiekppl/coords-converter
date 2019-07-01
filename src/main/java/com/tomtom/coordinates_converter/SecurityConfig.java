@@ -22,10 +22,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        "/add/**" - blokowanie adresów do końca gałęzi "/add","/add/sth", "/add/any", "/add/any/any" ,"add/any/any/sth"
         http.authorizeRequests()
                 .antMatchers("/convert_coordinates").permitAll() //kolejność jest ważna - elementy wyższe nadpisują niższe
+                .antMatchers("/").permitAll() //kolejność jest ważna - elementy wyższe nadpisują niższe
                 .antMatchers("/login").permitAll()
-                .antMatchers("/profile").permitAll()
-                .antMatchers("/css/**").permitAll() //odblokowujemy dostęp do zasobow statycznych
-                .antMatchers("/api/**").permitAll() //odblokowujemy dostęp do zasobow statycznych
                 .antMatchers("/admin/**").hasAnyAuthority( "ROLE_ADMIN")
                 .antMatchers("/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().permitAll()

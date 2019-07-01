@@ -13,7 +13,7 @@ public class ConverterContoller {
     @Autowired
     private Converter converter;
 
-    @GetMapping(value = "/convert_coordinates")
+    @GetMapping(value = "/")
     private String showInputPages() {
         return "index";
     }
