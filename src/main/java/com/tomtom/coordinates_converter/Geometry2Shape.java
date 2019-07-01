@@ -1,32 +1,32 @@
 package com.tomtom.coordinates_converter;
 
-import org.geotools.data.DataUtilities;
-import org.geotools.data.DefaultTransaction;
-import org.geotools.data.Transaction;
-import org.geotools.data.collection.ListFeatureCollection;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.shapefile.ShapefileDataStoreFactory;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.geotools.swing.data.JFileDataStoreChooser;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-
-import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+//import org.geotools.data.DataUtilities;
+//import org.geotools.data.DefaultTransaction;
+//import org.geotools.data.Transaction;
+//import org.geotools.data.collection.ListFeatureCollection;
+//import org.geotools.data.shapefile.ShapefileDataStore;
+//import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+//import org.geotools.data.simple.SimpleFeatureCollection;
+//import org.geotools.data.simple.SimpleFeatureSource;
+//import org.geotools.data.simple.SimpleFeatureStore;
+//import org.geotools.feature.simple.SimpleFeatureBuilder;
+//import org.geotools.geometry.jts.JTSFactoryFinder;
+//import org.geotools.swing.data.JFileDataStoreChooser;
+//import org.locationtech.jts.geom.Coordinate;
+//import org.locationtech.jts.geom.GeometryFactory;
+//import org.locationtech.jts.geom.Point;
+//import org.opengis.feature.simple.SimpleFeature;
+//import org.opengis.feature.simple.SimpleFeatureType;
+//
+//import javax.swing.*;
+//import java.io.BufferedReader;
+//import java.io.File;
+//import java.io.FileReader;
+//import java.io.Serializable;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
 
 public class Geometry2Shape {
 
