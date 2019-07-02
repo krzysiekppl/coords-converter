@@ -5,11 +5,11 @@
     <title>Convert coordinates</title>
 </head>
 <body>
-<form style="padding: 20px" action="/convert_coordinates" method="post">
+<form style="padding: 20px" action="/" method="post">
     <h3>Wprowadź koordynaty:</h3>
     <textarea th:text="${@converter.getOriginalCoordinates()}" rows="4" style="width: 100%; height: 100px" type="text" name="coordinates"></textarea>
     <button>Konwertuj</button>
-    <input name="order" type="checkbox" value="change"> odwróć koordynaty
+    <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
 </form>
 <div>
     <h4>Pierwotna geometria</h4>
@@ -20,8 +20,10 @@
     <p th:text="${@converter.getWgsCoordinates()}"></p>
     <h4>WKT Linestring</h4>
     <p th:text="${@converter.getWktCoordinates()}"></p>
-    <h4>UTM - to do</h4>
-    <p th:text="${@converter.getUtmCoordinates()}"></p>
+    <h4>Koordynaty dla Cartopii</h4>
+    <div th:each="item : ${@converter.getCartopiaCoordinates()}">
+    <p th:text="${item}"></p>
+    </div>
 </div>
 </body>
 </html>

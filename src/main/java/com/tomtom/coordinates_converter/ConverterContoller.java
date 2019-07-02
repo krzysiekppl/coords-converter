@@ -17,12 +17,8 @@ public class ConverterContoller {
     private String showInputPages() {
         return "index";
     }
-    @GetMapping(value = "/convert_coordinates")
-    private String showInputPages2() {
-        return "index";
-    }
 
-    @PostMapping(value = "/convert_coordinates")
+    @PostMapping(value = "/")
     private String convertCoordinates(Model model,
                                       @ModelAttribute(name = "coordinates") String coord,
                                       @ModelAttribute(name = "order") String order) {

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class Converter {
 
     private String originalCoordinates;
-    private String replaceCoordinates;
+    private String[] cartopiaCoordinates;
     private String coreDBCoordinates;
     private String utmCoordinates;
     private String wgsCoordinates;
@@ -61,6 +61,14 @@ public class Converter {
         wgsCoordinates = wgsCoordinatesBuilder.toString().substring(0, wgsCoordinatesBuilder.length() - 2) + ")";
         prepareWKTCoords();
         prepareCoreDBCoords();
+        prepareCartopiaCoords();
+    }
+
+    private void prepareCartopiaCoords() {
+        cartopiaCoordinates=wgsCoordinates.replace("(","")
+                .replace(")","")
+                .replace(" ",",")
+                .split(",,");
     }
 
     private void prepareWKTCoords() {
