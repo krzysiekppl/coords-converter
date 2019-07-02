@@ -41,6 +41,7 @@ public class Converter {
         wgsCoordinates = originalCoordinates;
         prepareWKTCoords();
         prepareCoreDBCoords();
+        prepareCartopiaCoords();
     }
 
     public void convertFromCoreDBCoordinates(String coords, String order) {

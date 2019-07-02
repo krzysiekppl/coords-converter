@@ -12,13 +12,13 @@
     <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
 </form>
 <div>
-    <h4>Pierwotna geometria</h4>
-    <p th:text="${@converter.getOriginalCoordinates()}"></p>
-    <h4>Geometria CoreDB</h4>
+<!--    <h4>Pierwotna geometria</h4>-->
+<!--    <p th:text="${@converter.getOriginalCoordinates()}"></p>-->
+    <h4>Geometria XML</h4>
     <p th:text="${@converter.getCoreDBCoordinates()}"></p>
     <h4>WGS 84</h4>
     <p th:text="${@converter.getWgsCoordinates()}"></p>
-    <h4>WKT Linestring</h4>
+    <h4>WKT </h4>
     <p th:text="${@converter.getWktCoordinates()}"></p>
     <h4>Koordynaty dla Cartopii</h4>
     <div th:each="item : ${@converter.getCartopiaCoordinates()}">
