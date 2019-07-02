@@ -46,7 +46,7 @@ public class Converter {
 
     public void convertFromCoreDBCoordinates(String coords, String order) {
         originalCoordinates = coords.trim();
-        String[] listOfCoordinates = originalCoordinates.substring(1, originalCoordinates.length() - 1).split("\\]\\s*\\[");
+        String[] listOfCoordinates = originalCoordinates.substring(1, originalCoordinates.length() - 1).split("\\],?\\s*\\[");
         StringBuilder wgsCoordinatesBuilder = new StringBuilder();
         wgsCoordinatesBuilder.append("(");
         for (String coordinates : listOfCoordinates) {
