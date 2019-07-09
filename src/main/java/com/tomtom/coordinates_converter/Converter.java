@@ -82,7 +82,7 @@ public class Converter {
                 .replace("(", "[")
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
-//        length = (int) geometryLength(geometry);
+        length = (int) geometryLength(geometry);
     }
 
     private void convertFromWellKnownText(String coords) {
