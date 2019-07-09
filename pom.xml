@@ -60,8 +60,8 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-api</artifactId>
-            <version>8.0</version>
+            <artifactId>gt-main</artifactId>
+            <version>8.0-M0</version>
         </dependency>
     </dependencies>
 
