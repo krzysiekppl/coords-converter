@@ -1,13 +1,10 @@
 package com.tomtom.coordinates_converter;
 
 import lombok.*;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.stereotype.Service;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +79,7 @@ public class Converter {
                 .replace("(", "[")
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
-        length = (int) geometryLength(geometry);
+//        length = (int) geometryLength(geometry);
     }
 
     private void convertFromWellKnownText(String coords) {
@@ -160,21 +157,22 @@ public class Converter {
                 Double.parseDouble(partsOfCoordinate[1]) / COREDB_SCALE_FACTOR);
     }
 
-    private double geometryLength(Geometry geometry) {
-        double length = 0;
-        for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
-            length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
-        }
-        return length;
-    }
-
-    private static double distanceInMeters(Coordinate c1, Coordinate c2) {
-        try {
-            return JTS.orthodromicDistance(c1, c2, DefaultGeographicCRS.WGS84);
-        } catch (TransformException e) {
-            throw new IllegalStateException(e);
-        }
-    }
+    // TODO resolve problem with Geotools vs Heroku
+//    private double geometryLength(Geometry geometry) {
+//        double length = 0;
+//        for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
+//            length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
+//        }
+//        return length;
+//    }
+//
+//    private static double distanceInMeters(Coordinate c1, Coordinate c2) {
+//        try {
+//            return JTS.orthodromicDistance(c1, c2, DefaultGeographicCRS.WGS84);
+//        } catch (TransformException e) {
+//            throw new IllegalStateException(e);
+//        }
+//    }
 
 
 }
