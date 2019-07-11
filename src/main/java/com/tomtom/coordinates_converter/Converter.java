@@ -49,7 +49,8 @@ public class Converter {
                 .replace("<",NOTHING)
                 .replace(">",NOTHING)
                 .replace(";",NOTHING)
-                .replace(":",NOTHING);
+                .replace(":",NOTHING)
+                .replace("\n",NOTHING);
         originalCoordinates = coords.trim();
 
         if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
@@ -82,7 +83,7 @@ public class Converter {
                 .replace("(", "[")
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
-        length = (int) geometryLength(geometry);
+       // length = (int) geometryLength(geometry);
     }
 
     private void convertFromWellKnownText(String coords) {
@@ -160,20 +161,20 @@ public class Converter {
                 Double.parseDouble(partsOfCoordinate[1]) / COREDB_SCALE_FACTOR);
     }
 
-    // TODO resolve problem with Geotools vs Heroku
-    private double geometryLength(Geometry geometry) {
-        double length = 0;
-        for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
-            length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
-        }
-        return length;
-    }
+//     // TODO resolve problem with Geotools vs Heroku
+//     private double geometryLength(Geometry geometry) {
+//         double length = 0;
+//         for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
+//             length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
+//         }
+//         return length;
+//     }
 
-    private static double distanceInMeters(Coordinate c1, Coordinate c2) {
-        try {
-            return JTS.orthodromicDistance(c1, c2, DefaultGeographicCRS.WGS84);
-        } catch (TransformException e) {
-            throw new IllegalStateException(e);
-        }
-    }
+//     private static double distanceInMeters(Coordinate c1, Coordinate c2) {
+//         try {
+//             return JTS.orthodromicDistance(c1, c2, DefaultGeographicCRS.WGS84);
+//         } catch (TransformException e) {
+//             throw new IllegalStateException(e);
+//         }
+//     }
 }
