@@ -58,6 +58,16 @@
             <artifactId>jts</artifactId>
             <version>1.13</version>
         </dependency>
+             <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <build>
