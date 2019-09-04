@@ -1,9 +1,6 @@
 package com.tomtom.coordinates_converter;
 
 import lombok.*;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.stereotype.Service;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
@@ -50,7 +47,8 @@ public class Converter {
                 .replace(">",NOTHING)
                 .replace(";",NOTHING)
                 .replace(":",NOTHING)
-                .replace("\n",NOTHING);
+                .replace("\n",NOTHING)
+                .replace("\r",NOTHING);
         originalCoordinates = coords.trim();
 
         if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
@@ -83,7 +81,6 @@ public class Converter {
                 .replace("(", "[")
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
-       // length = (int) geometryLength(geometry);
     }
 
     private void convertFromWellKnownText(String coords) {
