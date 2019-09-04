@@ -3,30 +3,37 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <profiles>
         <profile>
-            <id>jboss-public</id>
+            <id>nexus-local</id>
             <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>http://central</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
                 <repository>
                     <id>Boundless</id>
                     <url>http://repo.boundlessgeo.com/main/</url>
                     <releases><enabled>true</enabled></releases>
                     <snapshots><enabled>true</enabled></snapshots>
                 </repository>
-                <repository>
-                    <id>maven</id>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </repository><repository>
-                    <id>central</id>
-                    <url>https://central</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </repository>
+
             </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>http://central</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
     </profiles>
 
     <activeProfiles>
-        <activeProfile>jboss-public</activeProfile>
+        <activeProfile>nexus-local</activeProfile>
     </activeProfiles>
 </settings>
