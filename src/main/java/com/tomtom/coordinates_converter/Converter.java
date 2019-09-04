@@ -1,6 +1,9 @@
 package com.tomtom.coordinates_converter;
 
 import lombok.*;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.stereotype.Service;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
@@ -81,6 +84,7 @@ public class Converter {
                 .replace("(", "[")
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
+        length = (int) geometryLength(geometry);
     }
 
     private void convertFromWellKnownText(String coords) {
@@ -158,20 +162,27 @@ public class Converter {
                 Double.parseDouble(partsOfCoordinate[1]) / COREDB_SCALE_FACTOR);
     }
 
-//     // TODO resolve problem with Geotools vs Heroku
-//     private double geometryLength(Geometry geometry) {
-//         double length = 0;
-//         for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
-//             length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
-//         }
-//         return length;
-//     }
+     // TODO resolve problem with Geotools vs Heroku
+     private double geometryLength(Geometry geometry) {
+         double length = 0;
+         for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
+             length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
+         }
+         return length;
+     }
 
-//     private static double distanceInMeters(Coordinate c1, Coordinate c2) {
-//         try {
-//             return JTS.orthodromicDistance(c1, c2, DefaultGeographicCRS.WGS84);
-//         } catch (TransformException e) {
-//             throw new IllegalStateException(e);
-//         }
-//     }
+     private double distanceInMeters(Coordinate c1, Coordinate c2) {
+         try {
+             return JTS.orthodromicDistance(vividToLocation(c1), vividToLocation(c2), DefaultGeographicCRS.WGS84);
+         } catch (TransformException e) {
+             throw new IllegalStateException(e);
+         }
+     }
+
+    private org.locationtech.jts.geom.Coordinate vividToLocation(Coordinate c1) {
+        org.locationtech.jts.geom.Coordinate coordinate = new org.locationtech.jts.geom.Coordinate();
+        coordinate.x = c1.x;
+        coordinate.y = c1.y;
+        return coordinate;
+    }
 }
