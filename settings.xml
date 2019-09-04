@@ -3,37 +3,25 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <profiles>
         <profile>
-            <id>nexus-local</id>
+            <id>jboss-public</id>
             <repositories>
-                <repository>
-                    <id>central</id>
-                    <url>http://central</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </repository>
                 <repository>
                     <id>Boundless</id>
                     <url>http://repo.boundlessgeo.com/main/</url>
                     <releases><enabled>true</enabled></releases>
                     <snapshots><enabled>true</enabled></snapshots>
                 </repository>
-
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>central</id>
-                    <url>http://central</url>
+                <repository>
+                    <id>maven</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
                     <releases><enabled>true</enabled></releases>
                     <snapshots><enabled>true</enabled></snapshots>
-                </pluginRepository>
-            </pluginRepositories>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+                </repository>
+            </repositories>
         </profile>
     </profiles>
 
     <activeProfiles>
-        <activeProfile>nexus-local</activeProfile>
+        <activeProfile>jboss-public</activeProfile>
     </activeProfiles>
 </settings>
