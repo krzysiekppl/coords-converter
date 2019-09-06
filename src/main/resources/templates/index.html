@@ -7,21 +7,22 @@
     <style>
         #map {
             height: 400px;
-            width: 800px;
+            width: 50%;
         }
     </style>
 </head>
 <body>
+<div><div style="float: left; width:50%">
 <form style="padding: 10px" action="/" method="post">
 
     <h3>Wprowadź koordynaty:</h3>
-    <textarea th:text="${@converter.getOriginalCoordinates()}" rows="4" style="width: 100%; height: 100px" type="text"
-              name="coordinates"></textarea>
+    <textarea th:text="${@converter.getOriginalCoordinates()}" rows="4" style="width: 100%; height: 250px" type="text"
+              name="coordinates"></textarea><br>
     <button>Konwertuj</button>
     <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
-</form>
-
-
+</form></div>
+<div style="float: left; width:50%" id="map" ></div>
+</div>
 <div style="padding: 10px">
     <H3 th:text="${message}"></H3>
 
@@ -45,7 +46,7 @@
     </div>
 </div>
 
-<div id="map"></div>
+
 <script>
     // Initialize and add the map
     function initMap() {
@@ -65,9 +66,9 @@
         });
         // The map, centered at Uluru
         var map = new google.maps.Map(
-            document.getElementById('map'), {zoom: 4, center: {lat: 0, lng: -180}, path: flightPath});
+            document.getElementById('map'), {zoom: 10, center: {lat: -18.142, lng: 178.431}, path: flightPath});
         // The marker, positioned at Uluru
-        var marker = new google.maps.Marker({position: {lat: 0, lng: -180}, map: map});
+        var marker = new google.maps.Polyline({path: flightPath, map: map});
     }
 </script>
 <script async defer
