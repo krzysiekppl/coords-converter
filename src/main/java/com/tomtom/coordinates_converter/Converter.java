@@ -49,8 +49,7 @@ public class Converter {
     void convertCoordinates(String coords, String order) {
         if (checkInputCoordinatesByRegex(coords, WKT_GEOMETRY_PATTERN)) {
             convertFromWellKnownText(coords);
-
-
+            prepareString(coords);
         } else if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
             prepareString(coords);
             convertFromWellKnownText(convertFromCoreDBCoordinates(coords.replace("]]],[[[", ":")
