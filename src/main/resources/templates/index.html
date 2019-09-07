@@ -19,59 +19,58 @@
     </style>
 </head>
 <body>
-<div><div style="float: left; width:50%">
-<form style="padding: 10px" action="/" method="post">
+<div>
+    <div style="float: left; width:50%">
+        <form style="padding: 10px" action="/" method="post">
 
-    <h3>Wprowadź koordynaty:</h3>
-    <textarea th:text="${@converter.getOriginalCoordinates()}" rows="4" style="width: 100%; height: 250px" type="text"
-              name="coordinates"></textarea><br>
-    <button>Konwertuj</button>
-    <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
-</form></div>
-<div style="float: left; width:50%" id="map" ></div>
+            <h3>Wprowadź koordynaty:</h3>
+            <textarea th:text="${@converter.getOriginalCoordinates()}" rows="4" style="width: 100%; height: 250px"
+                      type="text"
+                      name="coordinates"></textarea><br>
+            <button>Konwertuj</button>
+            <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
+        </form>
+    </div>
+    <div style="float: left; width:50%" id="map"></div>
 </div>
-<div style="padding: 10px">
-    <H3 th:text="${message}"></H3>
+<div>
 
-    <p th:text="${'Długość geometrii: '+@converter.length + 'm.'}"></p>
+    <div style=" padding: 10px; float: left; width:50%">
+        <H3 th:text="${message}"></H3>
 
-    <h4>WKT </h4>
-    <p th:text="${@converter.geometry}"></p>
+        <p th:text="${'Długość geometrii: '+@converter.length + 'm.'}"></p>
 
-    <h4>WGS 84</h4>
-    <p th:text="${@converter.wgsCoordinates}"></p>
+        <h4>WKT </h4>
+        <p th:text="${@converter.geometry}"></p>
 
-    <h4>Geometria XML</h4>
-    <p th:text="${@converter.xmlCoordinates}"></p>
+        <h4>WGS 84</h4>
+        <p th:text="${@converter.wgsCoordinates}"></p>
 
-    <h4>Geometria CoreDB</h4>
-    <p th:text="${@converter.coreDBCoordinates}"></p>
+        <h4>Geometria XML</h4>
+        <p th:text="${@converter.xmlCoordinates}"></p>
 
-    <h4>Koordynaty dla Cartopii</h4>
-    <div th:each="item : ${@converter.cartopiaCoordinates}">
-        <p th:text="${item}"></p>
+        <h4>Geometria CoreDB</h4>
+        <p th:text="${@converter.coreDBCoordinates}"></p>
+
+        <h4>Koordynaty dla Cartopii</h4>
+        <div th:each="item : ${@converter.cartopiaCoordinates}">
+            <p th:text="${item}"></p>
+        </div>
     </div>
 </div>
-<script>
-   var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-		osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-		osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
 
-	var map = L.map('map').setView([51.505, -0.159], 15).addLayer(osm);
+    var map = L.map('map').addLayer(osm);
 
-var latlngs = [
-    [45.51, -122.68],
-    [37.77, -122.43],
-    [34.04, -118.2]
-];
-var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
-// zoom the map to the polyline
-map.fitBounds(polyline.getBounds());
+    var latlngs = /*[[${@converter.lineOnMap}]]*/;
 
-<!--	L.marker([51.504, -0.159])-->
-<!--		.addTo(map)-->
-<!--		.bindPopup('A pretty CSS3 popup.<br />Easily customizable.')-->
-<!--		.openPopup();-->
+    var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+    map.fitBounds(polyline.getBounds());
+    /*]]>*/
 
 </script>
 </body>

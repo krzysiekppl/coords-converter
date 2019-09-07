@@ -63,6 +63,17 @@
             <artifactId>gt-main</artifactId>
             <version>21.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>19.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts-io</artifactId>
+            <version>1.14.0</version>
+        </dependency>
+
     </dependencies>
     <repositories>
 

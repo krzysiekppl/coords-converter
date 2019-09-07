@@ -29,8 +29,8 @@ public class ConverterContoller {
                                       HttpServletResponse response) throws IOException {
         try {
             converter.convertCoordinates(coord, order);
-        }catch (Exception e){
-            model.addAttribute("message"," (Sprawdź poprawność wprowadzonych wartości.)");
+        } catch (Exception e) {
+            model.addAttribute("message", " (Sprawdź poprawność wprowadzonych wartości.)");
             model.addAttribute("original", converter);
             return "index";
         }

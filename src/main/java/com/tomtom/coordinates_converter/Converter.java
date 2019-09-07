@@ -1,6 +1,7 @@
 package com.tomtom.coordinates_converter;
 
 import lombok.*;
+
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.operation.TransformException;
@@ -29,7 +30,7 @@ public class Converter {
     private final static String CORE_DB_COORDINATES_PATTERN = "\\[-?[\\d]{8,10},-?[\\d]{8,10}\\]";
     private final static String WGS_COORDINATES_PATTERN = "-?[1]?[\\d]{1,2}\\.[\\d]* -?[1]?[\\d]{1,2}\\.[\\d]*";
     private final static String WGS_COORDINATES_PATTERN_WITH_COMMA = "-?[1]?[\\d]{1,2}\\.[\\d]*, -?[1]?[\\d]{1,2}\\.[\\d]*";
-    private final static String WKT_GEOMETRY_PATTERN = "[\\w] (-?[1]?[\\d]{1,2}\\.";
+    private final static String WKT_GEOMETRY_PATTERN = "[\\w]* \\(-?[1]?[\\d]{1,2}\\.[\\d]+ -?";
 
     private static final double COREDB_SCALE_FACTOR = 10_000_000;
 
@@ -42,19 +43,16 @@ public class Converter {
     private String xmlCoordinates;
     private Geometry geometry;
     private int length;
+    private List<Double[]> lineOnMap;
 
     // TODO verify login - find another parser
     void convertCoordinates(String coords, String order) {
-        coords = coords.replace("\"",NOTHING)
-                .replace("<",NOTHING)
-                .replace(">",NOTHING)
-                .replace(";",NOTHING)
-                .replace(":",NOTHING)
-                .replace("\n",NOTHING)
-                .replace("\r",NOTHING);
-        originalCoordinates = coords.trim();
+        if (checkInputCoordinatesByRegex(coords, WKT_GEOMETRY_PATTERN)) {
+            convertFromWellKnownText(coords);
 
-        if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
+
+        } else if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
+            prepareString(coords);
             convertFromWellKnownText(convertFromCoreDBCoordinates(coords.replace("]]],[[[", ":")
                     .replace("]],[[", ";")
                     .replace(COMMA, SPACE)
@@ -62,16 +60,27 @@ public class Converter {
                     .replace("[", NOTHING)
                     .replace("]", NOTHING), order, COREDB_SCALE_FACTOR));
         } else if (checkInputCoordinatesByRegex(coords, WGS_COORDINATES_PATTERN)) {
+            prepareString(coords);
             convertFromWellKnownText(convertFromCoreDBCoordinates(coords
                     .replace(")),((", ":")
                     .replace("),(", ";")
                     .replace(", ", COMMA), order, 1d));
         } else if (checkInputCoordinatesByRegex(coords, WGS_COORDINATES_PATTERN_WITH_COMMA)) {
+            prepareString(coords);
             convertFromWellKnownText(convertFromCoreDBCoordinates(coords, order, 1d));
-        } else if (checkInputCoordinatesByRegex(coords, WKT_GEOMETRY_PATTERN)) {
-            convertFromWellKnownText(coords);
         }//TODO Add new format
         prepareOutput();
+    }
+
+    private void prepareString(String coords) {
+        coords = coords.replace("\"", NOTHING)
+                .replace("<", NOTHING)
+                .replace(">", NOTHING)
+                .replace(";", NOTHING)
+                .replace(":", NOTHING)
+                .replace("\n", NOTHING)
+                .replace("\r", NOTHING);
+        originalCoordinates = coords.trim();
     }
 
     private void prepareOutput() {
@@ -84,12 +93,21 @@ public class Converter {
                 .replace("(", "[")
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
+        prepareLineOnMap();
         length = (int) geometryLength(geometry);
+    }
+
+    private void prepareLineOnMap() {
+        lineOnMap = new ArrayList<>();
+        for (Coordinate coordinate : geometry.getCoordinates()) {
+            lineOnMap.add(new Double[]{coordinate.y, coordinate.x});
+        }
     }
 
     private void convertFromWellKnownText(String coords) {
         try {
             geometry = new WKTReader().read(coords);
+            wktCoordinates = coords;
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -162,22 +180,22 @@ public class Converter {
                 Double.parseDouble(partsOfCoordinate[1]) / COREDB_SCALE_FACTOR);
     }
 
-     // TODO resolve problem with Geotools vs Heroku
-     private double geometryLength(Geometry geometry) {
-         double length = 0;
-         for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
-             length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
-         }
-         return length;
-     }
+    // TODO resolve problem with Geotools vs Heroku
+    private double geometryLength(Geometry geometry) {
+        double length = 0;
+        for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
+            length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
+        }
+        return length;
+    }
 
-     private double distanceInMeters(Coordinate c1, Coordinate c2) {
-         try {
-             return JTS.orthodromicDistance(vividToLocation(c1), vividToLocation(c2), DefaultGeographicCRS.WGS84);
-         } catch (TransformException e) {
-             throw new IllegalStateException(e);
-         }
-     }
+    private double distanceInMeters(Coordinate c1, Coordinate c2) {
+        try {
+            return JTS.orthodromicDistance(vividToLocation(c1), vividToLocation(c2), DefaultGeographicCRS.WGS84);
+        } catch (TransformException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     private org.locationtech.jts.geom.Coordinate vividToLocation(Coordinate c1) {
         org.locationtech.jts.geom.Coordinate coordinate = new org.locationtech.jts.geom.Coordinate();
