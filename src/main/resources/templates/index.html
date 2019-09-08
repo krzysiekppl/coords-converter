@@ -10,19 +10,18 @@
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
             integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
             crossorigin=""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <title>Convert coordinates</title>
     <style>
-        #map {
-            height: 400px;
-            width: 50%;
+        #map, #wmap {
+            height: 450px;
         }
     </style>
 </head>
 <body>
-<div>
-    <div style="float: left; width:50%">
+<div style="float: left; width:50%">
+    <div>
         <form style="padding: 10px" action="/" method="post">
-
             <h3>Wprowadź koordynaty:</h3>
             <textarea th:text="${@converter.originalCoordinates}" rows="4" style="width: 100%; height: 250px"
                       type="text"
@@ -31,47 +30,74 @@
             <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
         </form>
     </div>
-    <div style="float: left; width:50%" id="map"></div>
-</div>
-<div>
 
-    <div style=" padding: 10px; float: left; width:50%">
+    <div style=" padding: 10px">
         <H3 th:text="${message}"></H3>
 
         <p th:text="${'Długość geometrii: '+@converter.length + 'm.'}"></p>
 
+        <input type="button" onclick="copyToClipboard('#wkt')" value="Kopiuj WKT">
+        <input type="button" onclick="copyToClipboard('#wgs')" value="Kopiuj WGS">
+        <input type="button" onclick="copyToClipboard('#xml')" value="Kopiuj XML">
+        <input type="button" onclick="copyToClipboard('#codb')" value="Kopiuj CoreDB">
+
         <h4>WKT </h4>
-        <p th:text="${@converter.geometry}"></p>
+        <p id="wkt" th:text="${@converter.geometry}"></p>
 
         <h4>WGS 84</h4>
-        <p th:text="${@converter.wgsCoordinates}"></p>
+        <p id="wgs" th:text="${@converter.wgsCoordinates}"></p>
 
         <h4>Geometria XML</h4>
-        <p th:text="${@converter.xmlCoordinates}"></p>
+        <p id="xml" th:text="${@converter.xmlCoordinates}"></p>
 
         <h4>Geometria CoreDB</h4>
-        <p th:text="${@converter.coreDBCoordinates}"></p>
+        <p id="codb" th:text="${@converter.coreDBCoordinates}"></p>
 
         <h4>Koordynaty dla Cartopii</h4>
         <div th:each="item : ${@converter.cartopiaCoordinates}">
             <p th:text="${item}"></p>
         </div>
     </div>
+
 </div>
+<div style="float: left; width:50%">
+    <div id="wmap"></div>
+    <div id="map"></div>
+</div>
+
 <script th:inline="javascript">
+
     /*<![CDATA[*/
+
     var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
 
-    var map = L.map('map').addLayer(osm);
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        maxZoom: 20
+    });
 
-    var latlngs = /*[[${@converter.lineOnMap}]]*/;
+    var latlngs =/*[[${@converter.lineOnMap}]]*/;
+
+    var map = L.map('map').addLayer(osm);
+    var wmap = L.map('wmap').addLayer(Esri_WorldImagery);
 
     var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
-    map.fitBounds(polyline.getBounds());
-    /*]]>*/
+    var wpolyline = L.polyline(latlngs, {color: 'red'}).addTo(wmap);
 
+    map.fitBounds(polyline.getBounds());
+    wmap.fitBounds(wpolyline.getBounds());
+
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+    }
+
+    /*]]>*/
 </script>
 </body>
 </html>

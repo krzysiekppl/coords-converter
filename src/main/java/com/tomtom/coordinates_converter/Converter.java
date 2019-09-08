@@ -96,6 +96,7 @@ public class Converter {
         length = (int) geometryLength(geometry);
     }
 
+
     private void prepareLineOnMap() {
         lineOnMap = new ArrayList<>();
         for (Coordinate coordinate : geometry.getCoordinates()) {
