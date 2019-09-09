@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
           crossorigin=""/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
             integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
             crossorigin=""></script>
@@ -21,41 +23,70 @@
 <body>
 <div style="float: left; width:50%">
     <div>
+        <nav class="navbar navbar-light bg-light">
+  <span class="navbar-text">Konwerter koordynat
+  </span></nav>
         <form style="padding: 10px" action="/" method="post">
-            <h3>Wprowadź koordynaty:</h3>
-            <textarea th:text="${@converter.originalCoordinates}" rows="4" style="width: 100%; height: 250px"
-                      type="text"
-                      name="coordinates"></textarea><br>
-            <button>Konwertuj</button>
-            <input name="order" type="checkbox" value="change"> zamień kolejność lat/long
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Wprowadź koordynaty:</span>
+                </div>
+                <textarea class="form-control" aria-label="With textarea" th:text="${@converter.originalCoordinates}"
+                          rows="4" style="height: 250px"
+                          type="text"
+                          name="coordinates"></textarea>
+            </div>
+            <button class="btn btn-success">Konwertuj</button>
+            <div class="form-check">
+                <input class="form-check-input" id="defaultCheck1" name="order" type="checkbox" value="change">
+                <label class="form-check-label" for="defaultCheck1">zamień kolejność lat/long</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" id="defaultCheck2" name="reverse" type="checkbox" value="true">
+                <label class="form-check-label" for="defaultCheck2">odwróć kierunkowość geometrii</label>
+            </div>
         </form>
     </div>
 
     <div style=" padding: 10px">
-        <H3 th:text="${message}"></H3>
+        <H5 th:text="${message}"></H5><br>
+        <div class="shadow p-3 mb-5 bg-white rounded">
+        <span th:text="${'Długość geometrii: '+@converter.length + 'm. Ilość punktów: '
+        + @converter.cartopiaCoordinates.length}"></span>
+        </div>
+        <h5>Geometria w formacie WKT
+            <input type="button" class="btn btn-success" onclick="unblock('wkt')" value="pokaż">
+            <input type="button" class="btn btn-success" onclick="copyToClipboard('#wkt')" value="kopiuj do schowka">
+        </h5>
+        <p style="display: none" id="wkt" th:text="${@converter.geometry}"></p>
 
-        <p th:text="${'Długość geometrii: '+@converter.length + 'm.'}"></p>
+        <h5>Geometria w formacie WGS 84
+            <input type="button" class="btn btn-success" onclick="unblock('wgs')" value="pokaż">
+            <input type="button" class="btn btn-success" onclick="copyToClipboard('#wgs')" value="kopiuj do schowka">
+        </h5>
+        <p style="display: none" id="wgs" th:text="${@converter.wgsCoordinates}"></p>
 
-        <input type="button" onclick="copyToClipboard('#wkt')" value="Kopiuj WKT">
-        <input type="button" onclick="copyToClipboard('#wgs')" value="Kopiuj WGS">
-        <input type="button" onclick="copyToClipboard('#xml')" value="Kopiuj XML">
-        <input type="button" onclick="copyToClipboard('#codb')" value="Kopiuj CoreDB">
+        <h5>Geometria formacie XML
+            <input type="button" class="btn btn-success" onclick="unblock('xml')" value="pokaż">
+            <input type="button" class="btn btn-success" onclick="copyToClipboard('#xml')" value="kopiuj do schowka">
+        </h5>
+        <p style="display: none" id="xml" th:text="${@converter.xmlCoordinates}"></p>
 
-        <h4>WKT </h4>
-        <p id="wkt" th:text="${@converter.geometry}"></p>
+        <h5>Geometria formacie CoreDB
+            <input type="button" class="btn btn-success" onclick="unblock('codb')" value="pokaż">
+            <input type="button" class="btn btn-success" onclick="copyToClipboard('#codb')" value="kopiuj do schowka">
+        </h5>
+        <p style="display: none" id="codb" th:text="${@converter.coreDBCoordinates}"></p>
 
-        <h4>WGS 84</h4>
-        <p id="wgs" th:text="${@converter.wgsCoordinates}"></p>
-
-        <h4>Geometria XML</h4>
-        <p id="xml" th:text="${@converter.xmlCoordinates}"></p>
-
-        <h4>Geometria CoreDB</h4>
-        <p id="codb" th:text="${@converter.coreDBCoordinates}"></p>
-
-        <h4>Koordynaty dla Cartopii</h4>
-        <div th:each="item : ${@converter.cartopiaCoordinates}">
-            <p th:text="${item}"></p>
+        <h5>Koordynaty dla Cartopii
+            <button type="button" class="btn btn-success" onclick="unblock('cpp')">pokaż <span class="badge badge-light"
+                                                                                               th:text="${@converter.cartopiaCoordinates.length}"></span>
+            </button>
+        </h5>
+        <div id="cpp" style="display: none">
+            <div th:each="item : ${@converter.cartopiaCoordinates}">
+                <p th:text="${item}"></p>
+            </div>
         </div>
     </div>
 
@@ -79,12 +110,24 @@
     });
 
     var latlngs =/*[[${@converter.lineOnMap}]]*/;
+    var first_point = /*[[${@converter.lineOnMap.get(0)}]]*/;
+    var last_point = /*[[${@converter.lineOnMap.get(@converter.lineOnMap.size() - 1)}]]*/;
 
     var map = L.map('map').addLayer(osm);
     var wmap = L.map('wmap').addLayer(Esri_WorldImagery);
 
     var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
     var wpolyline = L.polyline(latlngs, {color: 'red'}).addTo(wmap);
+
+    var myIcon = L.icon({
+        iconUrl: 'endIcon.png', iconSize: [33, 45],
+        iconAnchor: [18, 44],
+    });
+
+    L.marker(first_point, {color: 'blue'}).addTo(map);
+    L.marker(first_point, {color: 'blue'}).addTo(wmap);
+    L.marker(last_point, {icon: myIcon}).addTo(map);
+    L.marker(last_point, {icon: myIcon}).addTo(wmap);
 
     map.fitBounds(polyline.getBounds());
     wmap.fitBounds(wpolyline.getBounds());
@@ -95,6 +138,15 @@
         $temp.val($(element).text()).select();
         document.execCommand("copy");
         $temp.remove();
+    }
+
+    function unblock(element) {
+        var x = document.getElementById(element);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
     }
 
     /*]]>*/

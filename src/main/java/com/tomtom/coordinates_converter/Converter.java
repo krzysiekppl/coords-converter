@@ -5,10 +5,10 @@ import lombok.*;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.operation.TransformException;
-import org.springframework.stereotype.Service;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import static com.tomtom.coordinates_converter.GeometryType.*;
 @Setter
 @NoArgsConstructor
 @Service
-public class Converter {
+class Converter {
 
     private final static String NOTHING = "";
     private final static String SPACE = " ";
@@ -46,43 +46,43 @@ public class Converter {
     private List<Double[]> lineOnMap;
 
     // TODO verify login - find another parser
-    void convertCoordinates(String coords, String order) {
-        if (checkInputCoordinatesByRegex(coords, WKT_GEOMETRY_PATTERN)) {
-            convertFromWellKnownText(coords);
-            prepareString(coords);
-        } else if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
-            prepareString(coords);
-            convertFromWellKnownText(convertFromCoreDBCoordinates(coords.replace("]]],[[[", ":")
+    void convertCoordinates(String coords, String order, Boolean reverse) {
+        if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
+            convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords).replace("]]],[[[", ":")
                     .replace("]],[[", ";")
                     .replace(COMMA, SPACE)
                     .replace("] [", COMMA)
                     .replace("[", NOTHING)
                     .replace("]", NOTHING), order, COREDB_SCALE_FACTOR));
-        } else if (checkInputCoordinatesByRegex(coords, WGS_COORDINATES_PATTERN)) {
-            prepareString(coords);
-            convertFromWellKnownText(convertFromCoreDBCoordinates(coords
+        } else if (checkInputCoordinatesByRegex(coords, WGS_COORDINATES_PATTERN) || checkInputCoordinatesByRegex(coords, WKT_GEOMETRY_PATTERN)) {
+            convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords)
                     .replace(")),((", ":")
                     .replace("),(", ";")
                     .replace(", ", COMMA), order, 1d));
         } else if (checkInputCoordinatesByRegex(coords, WGS_COORDINATES_PATTERN_WITH_COMMA)) {
-            prepareString(coords);
-            convertFromWellKnownText(convertFromCoreDBCoordinates(coords, order, 1d));
+            convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords), order, 1d));
         }//TODO Add new format
-        prepareOutput();
+        prepareOutput(reverse);
     }
 
-    private void prepareString(String coords) {
+    private String prepareString(String coords) {
+        originalCoordinates = coords.trim();
         coords = coords.replace("\"", NOTHING)
                 .replace("<", NOTHING)
                 .replace(">", NOTHING)
                 .replace(";", NOTHING)
                 .replace(":", NOTHING)
                 .replace("\n", NOTHING)
-                .replace("\r", NOTHING);
-        originalCoordinates = coords.trim();
+                .replace("\r", NOTHING)
+                .replaceAll("[a-zA-Z]+", NOTHING);
+        return coords.trim();
     }
 
-    private void prepareOutput() {
+    private void prepareOutput(Boolean reverse) {
+        if (reverse) {
+            geometry = geometry.reverse();
+            wktCoordinates = geometry.toString();
+        }
         wgsCoordinates = wktCoordinates.replace(MULTILINESTRING.enumValue, NOTHING)
                 .replace(MULTIPOLYGON.enumValue, NOTHING).replace(POLYGON.enumValue, NOTHING).replace(LINESTRING.enumValue, NOTHING).replace(GeometryType.POINT.enumValue, NOTHING);
         cartopiaCoordinates = wgsCoordinates.replace(SPACE, COMMA).split(COMMA + COMMA);
