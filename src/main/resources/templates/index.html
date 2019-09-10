@@ -55,32 +55,37 @@
         + @converter.cartopiaCoordinates.length}"></span>
         </div>
         <h5>Geometria w formacie WKT
-            <input type="button" class="btn btn-success" onclick="unblock('wkt')" value="pokaż">
-            <input type="button" class="btn btn-success" onclick="copyToClipboard('#wkt')" value="kopiuj do schowka">
+            <input type="button" class="btn btn-success btn-xs" onclick="unblock('wkt')" value="pokaż">
+            <input type="button" class="btn btn-success btn-xs" onclick="copyToClipboard('#wkt')"
+                   value="kopiuj do schowka">
         </h5>
         <p style="display: none" id="wkt" th:text="${@converter.geometry}"></p>
 
         <h5>Geometria w formacie WGS 84
-            <input type="button" class="btn btn-success" onclick="unblock('wgs')" value="pokaż">
-            <input type="button" class="btn btn-success" onclick="copyToClipboard('#wgs')" value="kopiuj do schowka">
+            <input type="button" class="btn btn-success btn-xs" onclick="unblock('wgs')" value="pokaż">
+            <input type="button" class="btn btn-success btn-xs" onclick="copyToClipboard('#wgs')"
+                   value="kopiuj do schowka">
         </h5>
         <p style="display: none" id="wgs" th:text="${@converter.wgsCoordinates}"></p>
 
-        <h5>Geometria formacie XML
-            <input type="button" class="btn btn-success" onclick="unblock('xml')" value="pokaż">
-            <input type="button" class="btn btn-success" onclick="copyToClipboard('#xml')" value="kopiuj do schowka">
+        <h5>Geometria w formacie XML
+            <input type="button" class="btn btn-success btn-xs" onclick="unblock('xml')" value="pokaż">
+            <input type="button" class="btn btn-success btn-xs" onclick="copyToClipboard('#xml')"
+                   value="kopiuj do schowka">
         </h5>
         <p style="display: none" id="xml" th:text="${@converter.xmlCoordinates}"></p>
 
-        <h5>Geometria formacie CoreDB
-            <input type="button" class="btn btn-success" onclick="unblock('codb')" value="pokaż">
-            <input type="button" class="btn btn-success" onclick="copyToClipboard('#codb')" value="kopiuj do schowka">
+        <h5>Geometria w formacie CoreDB
+            <input type="button" class="btn btn-success btn-xs" onclick="unblock('codb')" value="pokaż">
+            <input type="button" class="btn btn-success btn-xs" onclick="copyToClipboard('#codb')"
+                   value="kopiuj do schowka">
         </h5>
         <p style="display: none" id="codb" th:text="${@converter.coreDBCoordinates}"></p>
 
         <h5>Koordynaty dla Cartopii
-            <button type="button" class="btn btn-success" onclick="unblock('cpp')">pokaż <span class="badge badge-light"
-                                                                                               th:text="${@converter.cartopiaCoordinates.length}"></span>
+            <button type="button" class="btn btn-success btn-xs" onclick="unblock('cpp')">pokaż <span
+                    class="badge badge-light"
+                    th:text="${@converter.cartopiaCoordinates.length}"></span>
             </button>
         </h5>
         <div id="cpp" style="display: none">
