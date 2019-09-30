@@ -138,10 +138,10 @@ class Converter {
                     coordss = getCoordinatesCoordsFormat(stringCoordinates.split(" "));
                     coordinatesTemp.add(coordss);
 
-                    if (coordinatesTemp.size() > 4 && coordinatesTemp.size() == outeringInnering.length && coordinatesTemp.get(0).equals2D(coordinatesTemp.get(coordinatesTemp.size() - 1)) && strings.length == 1) {
+                    if (coordinatesTemp.size() >= 4 && coordinatesTemp.size() == outeringInnering.length && coordinatesTemp.get(0).equals2D(coordinatesTemp.get(coordinatesTemp.size() - 1)) && strings.length == 1) {
                         setWktCoordinates(getWktCoordinates().replaceFirst("\\(", POLYGON.enumValue));
                     } else if (coordinatesTemp.size() > 3 && coordinatesTemp.size() == outeringInnering.length && coordinatesTemp.get(0).equals2D(coordinatesTemp.get(coordinatesTemp.size() - 1))
-                            && strings.length > 1) {
+                            && strings.length > 1 && wktCoordinates.contains("POLYGON")) {
                         setWktCoordinates(getWktCoordinates().replaceFirst("\\(", MULTIPOLYGON.enumValue + "("));
                     } else if (temp.length > 1 && coordinatesTemp.size() == outeringInnering.length && !coordinatesTemp.get(0).equals2D(coordinatesTemp.get(coordinatesTemp.size() - 1))) {
                         setWktCoordinates(getWktCoordinates().replaceFirst("\\(", MULTILINESTRING.enumValue));
