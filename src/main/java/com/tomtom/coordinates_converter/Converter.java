@@ -31,6 +31,7 @@ class Converter {
     private final static String WGS_COORDINATES_PATTERN = "-?[1]?[\\d]{1,2}\\.[\\d]* -?[1]?[\\d]{1,2}\\.[\\d]*";
     private final static String WGS_COORDINATES_PATTERN_WITH_COMMA = "-?[1]?[\\d]{1,2}\\.[\\d]*, -?[1]?[\\d]{1,2}\\.[\\d]*";
     private final static String WKT_GEOMETRY_PATTERN = "[\\w]* \\(-?[1]?[\\d]{1,2}\\.[\\d]+ -?";
+    private final static String JSON_GEOMETRY_PATTERN = "[\\[\n]+-?[1]?[\\d]+,\n-?";
 
     private static final double COREDB_SCALE_FACTOR = 10_000_000;
 
@@ -47,7 +48,7 @@ class Converter {
 
     // TODO verify login - find another parser
     void convertCoordinates(String coords, String order, Boolean reverse) {
-        if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN)) {
+        if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN) || checkInputCoordinatesByRegex(coords,JSON_GEOMETRY_PATTERN)) {
             convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords).replace("]]],[[[", ":")
                     .replace("]],[[", ";")
                     .replace(COMMA, SPACE)
