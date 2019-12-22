@@ -15,7 +15,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <title>Convert coordinates</title>
     <style>
-        #map, #wmap {
+        #map, #wmap, #mape {
             height: 450px;
         }
     </style>
@@ -102,7 +102,6 @@
 </div>
 
 <script th:inline="javascript">
-
     /*<![CDATA[*/
 
     var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -114,27 +113,27 @@
         maxZoom: 20
     });
 
-    var latlngs =/*[[${@converter.lineOnMap}]]*/;
+    var geo = JSON.parse (/*[[${@converter.geoJSON}]]*/);
     var first_point = /*[[${@converter.lineOnMap.get(0)}]]*/;
     var last_point = /*[[${@converter.lineOnMap.get(@converter.lineOnMap.size() - 1)}]]*/;
 
     var map = L.map('map').addLayer(osm);
     var wmap = L.map('wmap').addLayer(Esri_WorldImagery);
 
-    var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
-    var wpolyline = L.polyline(latlngs, {color: 'red'}).addTo(wmap);
-
     var myIcon = L.icon({
         iconUrl: 'endIcon.png', iconSize: [33, 45],
         iconAnchor: [18, 44],
     });
 
+    var polyline = L.geoJson(geo, {color: 'red'}).addTo(map);
     L.marker(first_point, {color: 'blue'}).addTo(map);
-    L.marker(first_point, {color: 'blue'}).addTo(wmap);
     L.marker(last_point, {icon: myIcon}).addTo(map);
+
+    var wpolyline = L.geoJson(geo, {color: 'red'}).addTo(wmap);
+    L.marker(first_point, {color: 'blue'}).addTo(wmap);
     L.marker(last_point, {icon: myIcon}).addTo(wmap);
 
-    map.fitBounds(polyline.getBounds());
+    map.fitBounds(wpolyline.getBounds());
     wmap.fitBounds(wpolyline.getBounds());
 
     function copyToClipboard(element) {

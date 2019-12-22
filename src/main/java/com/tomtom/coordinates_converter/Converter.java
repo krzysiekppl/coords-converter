@@ -1,13 +1,19 @@
 package com.tomtom.coordinates_converter;
 
+import com.tomtom.coordinates_converter.utils.GeoUtils;
 import lombok.*;
 
+import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,9 +34,9 @@ class Converter {
     private final static String COMMA = ",";
 
     private final static String CORE_DB_COORDINATES_PATTERN = "\\[-?[\\d]{8,10},-?[\\d]{8,10}\\]";
-    private final static String WGS_COORDINATES_PATTERN = "-?[1]?[\\d]{1,2}\\.[\\d]* -?[1]?[\\d]{1,2}\\.[\\d]*";
-    private final static String WGS_COORDINATES_PATTERN_WITH_COMMA = "-?[1]?[\\d]{1,2}\\.[\\d]*, -?[1]?[\\d]{1,2}\\.[\\d]*";
-    private final static String WKT_GEOMETRY_PATTERN = "[\\w]* \\(-?[1]?[\\d]{1,2}\\.[\\d]+ -?";
+    private final static String WGS_COORDINATES_PATTERN = "-?[1]?[\\d]{1,2}\\.?[\\d]* -?[1]?[\\d]{1,2}\\.?[\\d]*";
+    private final static String WGS_COORDINATES_PATTERN_WITH_COMMA = "-?[1]?[\\d]{1,2}\\.?[\\d]*, -?[1]?[\\d]{1,2}\\.?[\\d]*";
+    private final static String WKT_GEOMETRY_PATTERN = "^[a-zA-Z]+ (\\({1,3}(-?[1]?[\\d]{1,2}\\.?[\\d]+? -?[1]?[\\d]{1,2}\\.?[\\d]+?,? ?)+[\\)]{1,3},?)+";
     private final static String JSON_GEOMETRY_PATTERN = "[\\[\n]+-?[1]?[\\d]+,\n-?";
 
     private static final double COREDB_SCALE_FACTOR = 10_000_000;
@@ -44,11 +50,18 @@ class Converter {
     private String xmlCoordinates;
     private Geometry geometry;
     private int length;
+    private String geoJSON;
+    private Integer area;
     private List<Double[]> lineOnMap;
 
     // TODO verify login - find another parser
     void convertCoordinates(String coords, String order, Boolean reverse) {
-        if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN) || checkInputCoordinatesByRegex(coords,JSON_GEOMETRY_PATTERN)) {
+        originalCoordinates = coords;
+        System.out.println(coords);
+        if(checkInputCoordinatesByRegex(coords,WKT_GEOMETRY_PATTERN)){
+            convertFromWellKnownText(coords);
+        }
+       else if (checkInputCoordinatesByRegex(coords, CORE_DB_COORDINATES_PATTERN) || checkInputCoordinatesByRegex(coords,JSON_GEOMETRY_PATTERN)) {
             convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords).replace("]]],[[[", ":")
                     .replace("]],[[", ";")
                     .replace(COMMA, SPACE)
@@ -64,10 +77,11 @@ class Converter {
             convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords), order, 1d));
         }//TODO Add new format
         prepareOutput(reverse);
+       geoJSON = new GeometryJSON().toString(geometry);
+//       areaInSquareM(geometry);
     }
 
     private String prepareString(String coords) {
-        originalCoordinates = coords.trim();
         coords = coords.replace("\"", NOTHING)
                 .replace("<", NOTHING)
                 .replace(">", NOTHING)
@@ -94,7 +108,7 @@ class Converter {
                 .replace(")", "]");
         xmlCoordinates = coreDBCoordinates.replace("],[", "] [");
         prepareLineOnMap();
-        length = (int) geometryLength(geometry);
+        length = (int) new GeoUtils().geometryLength(geometry);
     }
 
 
@@ -108,10 +122,10 @@ class Converter {
     private void convertFromWellKnownText(String coords) {
         try {
             geometry = new WKTReader().read(coords);
-            wktCoordinates = coords;
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        wktCoordinates = coords;
     }
 
     private boolean checkInputCoordinatesByRegex(String stringToMatch, String regex) {
@@ -136,7 +150,7 @@ class Converter {
                 Coordinate coordss;
                 for (String stringCoordinates : outeringInnering) {
                     tempwkt += getCoordinatesStringFormat(stringCoordinates.split(" "), order, scale) + ", ";
-                    coordss = getCoordinatesCoordsFormat(stringCoordinates.split(" "));
+                    coordss = new GeoUtils().getCoordinatesCoordsFormat(stringCoordinates.split(" "));
                     coordinatesTemp.add(coordss);
 
                     if (coordinatesTemp.size() >= 4 && coordinatesTemp.size() == outeringInnering.length && coordinatesTemp.get(0).equals2D(coordinatesTemp.get(coordinatesTemp.size() - 1)) && strings.length == 1) {
@@ -176,32 +190,13 @@ class Converter {
         return coords;
     }
 
-    private static Coordinate getCoordinatesCoordsFormat(String[] partsOfCoordinate) {
-        return new Coordinate(Double.parseDouble(partsOfCoordinate[0]) / COREDB_SCALE_FACTOR,
-                Double.parseDouble(partsOfCoordinate[1]) / COREDB_SCALE_FACTOR);
-    }
-
-    // TODO resolve problem with Geotools vs Heroku
-    private double geometryLength(Geometry geometry) {
-        double length = 0;
-        for (int i = 0; i < geometry.getCoordinates().length - 1; i++) {
-            length += distanceInMeters(geometry.getCoordinates()[i], geometry.getCoordinates()[i + 1]);
-        }
-        return length;
-    }
-
-    private double distanceInMeters(Coordinate c1, Coordinate c2) {
+    private void areaInSquareM(Geometry geometry){
         try {
-            return JTS.orthodromicDistance(vividToLocation(c1), vividToLocation(c2), DefaultGeographicCRS.WGS84);
-        } catch (TransformException e) {
-            throw new IllegalStateException(e);
+            MathTransform transform = CRS.findMathTransform(CRS.decode("EPSG:4326"), CRS.decode("EPSG:3857"), true);
+            area = (int) JTS.transform(geometry, transform).getArea();
+        } catch (FactoryException | TransformException e) {
+            e.printStackTrace();
         }
-    }
-
-    private org.locationtech.jts.geom.Coordinate vividToLocation(Coordinate c1) {
-        org.locationtech.jts.geom.Coordinate coordinate = new org.locationtech.jts.geom.Coordinate();
-        coordinate.x = c1.x;
-        coordinate.y = c1.y;
-        return coordinate;
+        System.out.println(area);
     }
 }
