@@ -20,7 +20,7 @@ public class ConverterContoller {
 
     @GetMapping(value = "/")
     private String showInputPages(Model model) {
-        converter.convertCoordinates(INIT_COORDINATES, null, false);
+        converter.convertCoordinates(INIT_COORDINATES.trim(), null, false);
         model.addAttribute("message", "Wprowadź koordynaty aby przekonwertować je na wybrane formaty.");
         return "index";
     }
@@ -32,7 +32,7 @@ public class ConverterContoller {
                                       @ModelAttribute(name = "reverse") String reverse,
                                       HttpServletResponse response) throws IOException {
         try {
-            converter.convertCoordinates(coord, order, reverse.equals("true"));
+            converter.convertCoordinates(coord.trim(), order, reverse.equals("true"));
         } catch (Exception e) {
             model.addAttribute("message", " (Sprawdź poprawność wprowadzonych wartości.)");
             model.addAttribute("original", converter);
