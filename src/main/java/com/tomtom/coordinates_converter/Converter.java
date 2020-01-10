@@ -77,7 +77,7 @@ class Converter {
             convertFromWellKnownText(convertFromCoreDBCoordinates(prepareString(coords), order, 1d));
         }//TODO Add new format
         prepareOutput(reverse);
-       geoJSON = new GeometryJSON().toString(geometry);
+       geoJSON = new GeometryJSON(7).toString(geometry);
 //       areaInSquareM(geometry);
     }
 
